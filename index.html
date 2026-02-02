@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Video Watermark Remover</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-gradient-to-br from-purple-50 to-blue-50 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+        <div class="container mx-auto px-4 py-6">
+            <h1 class="text-3xl font-bold text-gray-800">🎬 AI Video Watermark Remover</h1>
+            <p class="text-gray-600 mt-2">Remove watermarks from your videos using AI technology</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-12">
+        <div class="max-w-4xl mx-auto">
+            
+            <!-- Upload Section -->
+            <div id="uploadSection" class="bg-white rounded-2xl shadow-xl p-8 mb-8">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6">Enter Sora Video URL</h2>
+                
+                <!-- URL Input -->
+                <div class="mb-6">
+                    <label for="videoUrlInput" class="block text-sm font-medium text-gray-700 mb-2">
+                        Sora Video URL (from sora.chatgpt.com)
+                    </label>
+                    <input 
+                        type="url" 
+                        id="videoUrlInput" 
+                        placeholder="https://sora.chatgpt.com/p/s_..." 
+                        class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none transition-colors"
+                    >
+                    <p class="text-sm text-gray-500 mt-2">
+                        💡 Paste a public Sora video URL from OpenAI's Sora platform
+                    </p>
+                </div>
+
+                <!-- Example URLs -->
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                    <p class="text-sm font-medium text-blue-800 mb-2">📝 Example URL format:</p>
+                    <code class="text-xs text-blue-600 break-all">https://sora.chatgpt.com/p/s_68e83bd7eee88191be79d2ba7158516f</code>
+                </div>
+
+                <!-- Process Button -->
+                <button id="processBtn" class="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-4 rounded-lg font-semibold text-lg hover:from-purple-700 hover:to-blue-700 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed">
+                    Remove Watermark
+                </button>
+            </div>
+
+            <!-- Processing Section -->
+            <div id="processingSection" class="hidden bg-white rounded-2xl shadow-xl p-8 mb-8">
+                <div class="text-center">
+                    <div class="inline-block animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-purple-600 mb-4"></div>
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-2">Processing Your Video</h3>
+                    <p class="text-gray-600 mb-6">Please wait while AI removes the watermark...</p>
+                    
+                    <!-- Progress Bar -->
+                    <div class="w-full bg-gray-200 rounded-full h-3 mb-4">
+                        <div id="progressBar" class="bg-gradient-to-r from-purple-600 to-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                    <p id="progressText" class="text-sm text-gray-500">0%</p>
+                </div>
+            </div>
+
+            <!-- Result Section -->
+            <div id="resultSection" class="hidden bg-white rounded-2xl shadow-xl p-8">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6">✨ Result</h2>
+                
+                <!-- Cleaned Video -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-medium text-gray-700 mb-3">Cleaned Video (Watermark Removed)</h3>
+                    <video id="resultVideo" controls class="w-full rounded-lg shadow-md"></video>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex gap-4">
+                    <a id="downloadBtn" class="flex-1 bg-green-600 text-white py-3 rounded-lg font-semibold text-center hover:bg-green-700 transition-colors">
+                        Download Clean Video
+                    </a>
+                    <button id="processAnotherBtn" class="flex-1 bg-gray-600 text-white py-3 rounded-lg font-semibold hover:bg-gray-700 transition-colors">
+                        Process Another Video
+                    </button>
+                </div>
+            </div>
+
+            <!-- Error Section -->
+            <div id="errorSection" class="hidden bg-red-50 border-2 border-red-200 rounded-2xl p-6 mb-8">
+                <div class="flex items-start">
+                    <svg class="h-6 w-6 text-red-600 mt-1 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <div>
+                        <h3 class="text-lg font-semibold text-red-800 mb-2">Error</h3>
+                        <p id="errorMessage" class="text-red-700"></p>
+                        <button id="retryBtn" class="mt-4 bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-colors">
+                            Try Again
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white mt-12 py-6">
+        <div class="container mx-auto px-4 text-center text-gray-600">
+            <p>Powered by AI Technology | Built with ❤️</p>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>

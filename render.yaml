@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: sora-watermark-remover
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: KIE_API_KEY
+        sync: false
+      - key: USE_REAL_API
+        value: true

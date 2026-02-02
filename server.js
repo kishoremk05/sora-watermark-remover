@@ -106,9 +106,12 @@ app.get('/api/task/:taskId', (req, res) => {
     
     if (taskData.success && taskData.data.state === 'success') {
         const resultJson = JSON.parse(taskData.data.resultJson);
+        const originalUrl = resultJson.resultUrls[0];
+        // Return proxy URL to bypass CORS
         return res.json({
             status: 'completed',
-            videoUrl: resultJson.resultUrls[0]
+            videoUrl: `/api/download/${taskId}`,
+            originalUrl: originalUrl
         });
     }
     
@@ -120,6 +123,52 @@ app.get('/api/task/:taskId', (req, res) => {
     }
     
     res.json({ status: 'processing' });
+});
+
+// Video proxy endpoint - downloads video from Kie AI and serves it (bypasses CORS)
+app.get('/api/download/:taskId', async (req, res) => {
+    try {
+        const { taskId } = req.params;
+        const taskData = pendingTasks.get(taskId);
+        
+        if (!taskData || !taskData.success || taskData.data.state !== 'success') {
+            return res.status(404).json({ error: 'Video not found or not ready' });
+        }
+        
+        const resultJson = JSON.parse(taskData.data.resultJson);
+        const videoUrl = resultJson.resultUrls[0];
+        
+        console.log(`📥 Proxying video download for task: ${taskId}`);
+        console.log(`   Source URL: ${videoUrl}`);
+        
+        // Fetch video from Kie AI server
+        const videoResponse = await fetch(videoUrl);
+        
+        if (!videoResponse.ok) {
+            throw new Error(`Failed to fetch video: ${videoResponse.status}`);
+        }
+        
+        // Get content type and length
+        const contentType = videoResponse.headers.get('content-type') || 'video/mp4';
+        const contentLength = videoResponse.headers.get('content-length');
+        
+        // Set headers for video download
+        res.setHeader('Content-Type', contentType);
+        res.setHeader('Content-Disposition', 'attachment; filename="clean_sora_video.mp4"');
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        if (contentLength) {
+            res.setHeader('Content-Length', contentLength);
+        }
+        
+        // Stream the video to client
+        const buffer = await videoResponse.buffer();
+        console.log(`✅ Video download complete: ${buffer.length} bytes`);
+        res.send(buffer);
+        
+    } catch (error) {
+        console.error('Error proxying video:', error);
+        res.status(500).json({ error: 'Failed to download video', details: error.message });
+    }
 });
 
 // Helper function to download video from URL

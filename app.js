@@ -192,17 +192,10 @@ async function processVideo() {
             throw new Error(result.error || result.details || 'Failed to process video');
         }
         
-        // If we get here, we have a video blob (200 response)
-        const blob = await response.blob();
-        const resultURL = URL.createObjectURL(blob);
-        
-        // Show result
-        resultVideo.src = resultURL;
-        downloadBtn.href = resultURL;
-        downloadBtn.download = 'clean_sora_video.mp4';
-        
-        processingSection.classList.add('hidden');
-        resultSection.classList.remove('hidden');
+        // Note: The API now always returns 202 for async processing
+        // If we get here with a 200, it means the response was already handled
+        // This is a fallback that shouldn't normally be reached
+        throw new Error('Unexpected response from server. Please try again.');
         
     } catch (error) {
         clearInterval(progressInterval);

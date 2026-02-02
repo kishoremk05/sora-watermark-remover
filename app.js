@@ -135,6 +135,8 @@ async function processVideo() {
             
             try {
                 await pollForResult();
+                // If polling succeeded, we're done - exit the function
+                return;
             } catch (pollError) {
                 processingSection.classList.add('hidden');
                 

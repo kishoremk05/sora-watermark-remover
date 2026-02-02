@@ -103,12 +103,12 @@ async function processVideo() {
                         console.log(`Poll attempt ${i + 1}: ${pollResult.status}`);
                         
                         if (pollResult.status === 'completed' && pollResult.videoUrl) {
-                            // Success! Download the video
+                            // Success! Video is ready
                             console.log('Video ready:', pollResult.videoUrl);
                             
-                            const videoResponse = await fetch(pollResult.videoUrl);
-                            const videoBlob = await videoResponse.blob();
-                            const videoURL = URL.createObjectURL(videoBlob);
+                            // Use the proxy URL directly - no need to fetch as blob
+                            // The server proxies the video, so we can use it directly
+                            const videoURL = pollResult.videoUrl;
                             
                             // Show result
                             resultVideo.src = videoURL;

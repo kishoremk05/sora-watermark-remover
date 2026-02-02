@@ -115,7 +115,10 @@ async function processVideo() {
                             downloadBtn.href = videoURL;
                             downloadBtn.download = 'clean_sora_video.mp4';
                             
+                            // Hide all other sections and show result
                             processingSection.classList.add('hidden');
+                            errorSection.classList.add('hidden');
+                            uploadSection.classList.add('hidden');
                             resultSection.classList.remove('hidden');
                             return;
                         }

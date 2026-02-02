@@ -3,101 +3,351 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Video Watermark Remover</title>
+    <title>Sora Watermark Remover</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        body {
+            background: #1a1a1a;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        /* Animated blob background */
+        .blob-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+            pointer-events: none;
+        }
+        
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.3;
+            animation: float 20s ease-in-out infinite;
+        }
+        
+        .blob-1 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, #ff8c00 0%, transparent 70%);
+            top: -10%;
+            right: -10%;
+            animation-delay: 0s;
+        }
+        
+        .blob-2 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, #ff6600 0%, transparent 70%);
+            bottom: -10%;
+            left: -10%;
+            animation-delay: 5s;
+        }
+        
+        .blob-3 {
+            width: 350px;
+            height: 350px;
+            background: radial-gradient(circle, #cc7000 0%, transparent 70%);
+            top: 50%;
+            left: 50%;
+            animation-delay: 10s;
+        }
+        
+        /* Curved line patterns */
+        .curve-pattern {
+            position: fixed;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .curve-pattern-1 {
+            top: 20%;
+            right: 10%;
+            width: 300px;
+            height: 300px;
+            opacity: 0.15;
+        }
+        
+        .curve-pattern-2 {
+            bottom: 15%;
+            left: 5%;
+            width: 250px;
+            height: 250px;
+            opacity: 0.1;
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translate(0, 0) scale(1);
+            }
+            33% {
+                transform: translate(50px, -50px) scale(1.1);
+            }
+            66% {
+                transform: translate(-50px, 50px) scale(0.9);
+            }
+        }
+        
+        .content-wrapper {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .orange-accent {
+            color: #ff8c00;
+        }
+        
+        .bg-orange-accent {
+            background: #ff8c00;
+        }
+        
+        .border-orange-accent {
+            border-color: #ff8c00;
+        }
+        
+        .hover-lift {
+            transition: all 0.3s ease;
+        }
+        
+        .hover-lift:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 140, 0, 0.3);
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.4s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #ff8c00;
+            box-shadow: 0 0 0 3px rgba(255, 140, 0, 0.1);
+        }
+        
+        .btn-primary {
+            background: #ff8c00;
+            color: #000000;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            background: #ff9d1f;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 140, 0, 0.4);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .card {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid #ff8c00;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .progress-bar {
+            transition: width 0.5s ease;
+            background: linear-gradient(90deg, #ff8c00 0%, #ffa500 100%);
+        }
+    </style>
 </head>
-<body class="bg-gradient-to-br from-purple-50 to-blue-50 min-h-screen">
+<body>
+    
+    <!-- Animated Blob Background -->
+    <div class="blob-container">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+        <div class="blob blob-3"></div>
+    </div>
+    
+    <!-- Curved Line Patterns -->
+    <svg class="curve-pattern curve-pattern-1" viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M50 150 Q 100 50, 150 150 T 250 150" stroke="#ff8c00" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M40 160 Q 90 60, 140 160 T 240 160" stroke="#ff8c00" stroke-width="2" fill="none" opacity="0.25"/>
+        <path d="M30 170 Q 80 70, 130 170 T 230 170" stroke="#ff8c00" stroke-width="2" fill="none" opacity="0.2"/>
+        <path d="M20 180 Q 70 80, 120 180 T 220 180" stroke="#ff8c00" stroke-width="2" fill="none" opacity="0.15"/>
+        <path d="M10 190 Q 60 90, 110 190 T 210 190" stroke="#ff8c00" stroke-width="2" fill="none" opacity="0.1"/>
+    </svg>
+    
+    <svg class="curve-pattern curve-pattern-2" viewBox="0 0 250 250" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M200 125 Q 150 225, 100 125 T 0 125" stroke="#ff6600" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M210 115 Q 160 215, 110 115 T 10 115" stroke="#ff6600" stroke-width="2" fill="none" opacity="0.25"/>
+        <path d="M220 105 Q 170 205, 120 105 T 20 105" stroke="#ff6600" stroke-width="2" fill="none" opacity="0.2"/>
+        <path d="M230 95 Q 180 195, 130 95 T 30 95" stroke="#ff6600" stroke-width="2" fill="none" opacity="0.15"/>
+    </svg>
+    
+    <!-- Content Wrapper -->
+    <div class="content-wrapper">
+    
     <!-- Header -->
-    <header class="bg-white shadow-sm">
+    <header class="border-b border-white/10 bg-black/40 backdrop-blur-md">
         <div class="container mx-auto px-4 py-6">
-            <h1 class="text-3xl font-bold text-gray-800">🎬 AI Video Watermark Remover</h1>
-            <p class="text-gray-600 mt-2">Remove watermarks from your videos using AI technology</p>
+            <div class="max-w-5xl mx-auto flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <h1 class="text-2xl font-bold text-white">
+                        SORA<span class="orange-accent">.AI</span>
+                    </h1>
+                </div>
+                <div class="text-sm text-gray-400">
+                    Watermark Remover
+                </div>
+            </div>
         </div>
     </header>
 
     <!-- Main Content -->
-    <main class="container mx-auto px-4 py-12">
-        <div class="max-w-4xl mx-auto">
+    <main class="container mx-auto px-4 py-16">
+        <div class="max-w-5xl mx-auto">
             
+            <!-- Hero Section -->
+            <div class="text-center mb-12 fade-in">
+                <h2 class="text-5xl md:text-6xl font-bold text-white mb-4 tracking-tight">
+                    FROM VIDEO TO CLEAN
+                </h2>
+                <h3 class="text-4xl md:text-5xl font-bold text-white mb-6">
+                    WE'VE GOT A <span class="orange-accent">SOLUTION</span> FOR YOU
+                </h3>
+                <p class="text-gray-400 text-lg max-w-2xl mx-auto">
+                    Remove watermarks from your Sora videos instantly using advanced AI technology
+                </p>
+            </div>
+
             <!-- Upload Section -->
-            <div id="uploadSection" class="bg-white rounded-2xl shadow-xl p-8 mb-8">
-                <h2 class="text-2xl font-semibold text-gray-800 mb-6">Enter Sora Video URL</h2>
+            <div id="uploadSection" class="card rounded-2xl p-8 md:p-12 mb-8 hover-lift fade-in">
+                <h2 class="text-2xl font-semibold text-white mb-8">Enter Video URL</h2>
                 
                 <!-- URL Input -->
                 <div class="mb-6">
-                    <label for="videoUrlInput" class="block text-sm font-medium text-gray-700 mb-2">
-                        Sora Video URL (from sora.chatgpt.com)
+                    <label for="videoUrlInput" class="block text-sm font-medium text-gray-300 mb-3">
+                        SORA VIDEO URL
                     </label>
                     <input 
                         type="url" 
                         id="videoUrlInput" 
                         placeholder="https://sora.chatgpt.com/p/s_..." 
-                        class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none transition-colors"
+                        class="w-full px-5 py-4 bg-black/50 border border-white/20 rounded-lg text-white placeholder-gray-500 transition-all text-base"
                     >
-                    <p class="text-sm text-gray-500 mt-2">
-                        💡 Paste a public Sora video URL from OpenAI's Sora platform
+                    <p class="text-sm text-gray-500 mt-3">
+                        Paste a public Sora video URL from sora.chatgpt.com
                     </p>
                 </div>
 
-                <!-- Example URLs -->
-                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                    <p class="text-sm font-medium text-blue-800 mb-2">📝 Example URL format:</p>
-                    <code class="text-xs text-blue-600 break-all">https://sora.chatgpt.com/p/s_68e83bd7eee88191be79d2ba7158516f</code>
+                <!-- Example URL -->
+                <div class="bg-black/30 border border-white/10 rounded-lg p-4 mb-8">
+                    <p class="text-sm font-medium text-gray-400 mb-2">EXAMPLE URL:</p>
+                    <code class="text-xs text-gray-500 break-all font-mono">https://sora.chatgpt.com/p/s_68e83bd7eee88191be79d2ba7158516f</code>
                 </div>
 
                 <!-- Process Button -->
-                <button id="processBtn" class="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white py-4 rounded-lg font-semibold text-lg hover:from-purple-700 hover:to-blue-700 transition-all transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed">
+                <button id="processBtn" class="w-full btn-primary py-5 rounded-lg font-bold text-lg uppercase tracking-wide">
                     Remove Watermark
                 </button>
             </div>
 
             <!-- Processing Section -->
-            <div id="processingSection" class="hidden bg-white rounded-2xl shadow-xl p-8 mb-8">
+            <div id="processingSection" class="hidden card rounded-2xl p-12 mb-8 fade-in">
                 <div class="text-center">
-                    <div class="inline-block animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-purple-600 mb-4"></div>
-                    <h3 class="text-2xl font-semibold text-gray-800 mb-2">Processing Your Video</h3>
-                    <p class="text-gray-600 mb-6">Please wait while AI removes the watermark...</p>
+                    <div class="spinner mx-auto mb-8"></div>
+                    <h3 class="text-3xl font-bold text-white mb-3">PROCESSING YOUR VIDEO</h3>
+                    <p class="text-gray-400 mb-10 text-lg">Please wait while AI removes the watermark...</p>
                     
                     <!-- Progress Bar -->
-                    <div class="w-full bg-gray-200 rounded-full h-3 mb-4">
-                        <div id="progressBar" class="bg-gradient-to-r from-purple-600 to-blue-600 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    <div class="w-full bg-white/10 rounded-full h-2 mb-3 overflow-hidden">
+                        <div id="progressBar" class="progress-bar h-2 rounded-full" style="width: 0%"></div>
                     </div>
-                    <p id="progressText" class="text-sm text-gray-500">0%</p>
+                    <p id="progressText" class="text-sm text-gray-500 font-medium">0%</p>
                 </div>
             </div>
 
             <!-- Result Section -->
-            <div id="resultSection" class="hidden bg-white rounded-2xl shadow-xl p-8">
-                <h2 class="text-2xl font-semibold text-gray-800 mb-6">✨ Result</h2>
+            <div id="resultSection" class="hidden card rounded-2xl p-8 md:p-12 fade-in">
+                <div class="text-center mb-8">
+                    <h2 class="text-3xl font-bold text-white mb-2">
+                        <span class="orange-accent">SUCCESS!</span> YOUR VIDEO IS READY
+                    </h2>
+                    <p class="text-gray-400">Watermark removed successfully</p>
+                </div>
                 
                 <!-- Cleaned Video -->
-                <div class="mb-6">
-                    <h3 class="text-lg font-medium text-gray-700 mb-3">Cleaned Video (Watermark Removed)</h3>
-                    <video id="resultVideo" controls class="w-full rounded-lg shadow-md"></video>
+                <div class="mb-8">
+                    <div class="border border-white/20 rounded-xl overflow-hidden bg-black/50">
+                        <video id="resultVideo" controls class="w-full"></video>
+                    </div>
                 </div>
 
                 <!-- Action Buttons -->
-                <div class="flex gap-4">
-                    <a id="downloadBtn" class="flex-1 bg-green-600 text-white py-3 rounded-lg font-semibold text-center hover:bg-green-700 transition-colors">
-                        Download Clean Video
+                <div class="grid md:grid-cols-2 gap-4">
+                    <a id="downloadBtn" class="btn-primary py-5 rounded-lg font-bold text-center block uppercase tracking-wide">
+                        Download Video
                     </a>
-                    <button id="processAnotherBtn" class="flex-1 bg-gray-600 text-white py-3 rounded-lg font-semibold hover:bg-gray-700 transition-colors">
-                        Process Another Video
+                    <button id="processAnotherBtn" class="btn-secondary py-5 rounded-lg font-bold uppercase tracking-wide">
+                        Process Another
                     </button>
                 </div>
             </div>
 
             <!-- Error Section -->
-            <div id="errorSection" class="hidden bg-red-50 border-2 border-red-200 rounded-2xl p-6 mb-8">
-                <div class="flex items-start">
-                    <svg class="h-6 w-6 text-red-600 mt-1 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    <div>
-                        <h3 class="text-lg font-semibold text-red-800 mb-2">Error</h3>
-                        <p id="errorMessage" class="text-red-700"></p>
-                        <button id="retryBtn" class="mt-4 bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition-colors">
+            <div id="errorSection" class="hidden card rounded-2xl p-8 mb-8 border-2 border-red-500/30 fade-in">
+                <div class="flex items-start gap-4">
+                    <div class="flex-shrink-0">
+                        <svg class="h-6 w-6 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="text-lg font-semibold text-red-400 mb-2">ERROR</h3>
+                        <p id="errorMessage" class="text-red-300 text-sm mb-4"></p>
+                        <button id="retryBtn" class="bg-red-600 text-white px-8 py-3 rounded-lg text-sm font-bold uppercase tracking-wide hover:bg-red-700 transition-colors">
                             Try Again
                         </button>
                     </div>
@@ -108,11 +358,16 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-white mt-12 py-6">
-        <div class="container mx-auto px-4 text-center text-gray-600">
-            <p>Powered by AI Technology | Built with ❤️</p>
+    <footer class="border-t border-white/10 mt-20 py-8">
+        <div class="container mx-auto px-4">
+            <div class="max-w-5xl mx-auto text-center text-gray-500 text-sm">
+                <p>© 2026 Sora Watermark Remover. Powered by AI Technology.</p>
+            </div>
         </div>
     </footer>
+    
+    </div>
+    <!-- End Content Wrapper -->
 
     <script src="app.js"></script>
 </body>

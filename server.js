@@ -36,22 +36,17 @@ console.log('===================================\n');
 app.use(cors());
 app.use(express.json());
 
-// URL rewriting middleware for clean URLs (MUST be before static file serving)
-app.use((req, res, next) => {
-    // Map clean URLs to .html files
-    const urlMap = {
-        '/login': '/login.html',
-        '/pricing': '/pricing.html',
-        '/dashboard': '/dashboard.html',
-        '/': '/index.html'
-    };
-    
-    // If the requested URL is in our map, rewrite it
-    if (urlMap[req.path]) {
-        req.url = urlMap[req.path];
-    }
-    
-    next();
+// Serve clean URLs without .html extension
+app.get('/login', (req, res) => {
+    res.sendFile(path.join(__dirname, 'login.html'));
+});
+
+app.get('/pricing', (req, res) => {
+    res.sendFile(path.join(__dirname, 'pricing.html'));
+});
+
+app.get('/dashboard', (req, res) => {
+    res.sendFile(path.join(__dirname, 'dashboard.html'));
 });
 
 app.use(express.static('public')); // Serve public directory files

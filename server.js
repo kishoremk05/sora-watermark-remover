@@ -70,6 +70,39 @@ app.get('/dashboard', (req, res) => {
     res.sendFile(path.join(__dirname, 'dashboard.html'));
 });
 
+// Footer pages
+app.get('/privacy', (req, res) => {
+    res.sendFile(path.join(__dirname, 'privacy.html'));
+});
+
+app.get('/terms', (req, res) => {
+    res.sendFile(path.join(__dirname, 'terms.html'));
+});
+
+app.get('/cookies', (req, res) => {
+    res.sendFile(path.join(__dirname, 'cookies.html'));
+});
+
+app.get('/about', (req, res) => {
+    res.sendFile(path.join(__dirname, 'about.html'));
+});
+
+app.get('/contact', (req, res) => {
+    res.sendFile(path.join(__dirname, 'contact.html'));
+});
+
+app.get('/api-docs', (req, res) => {
+    res.sendFile(path.join(__dirname, 'api-docs.html'));
+});
+
+app.get('/blog', (req, res) => {
+    res.sendFile(path.join(__dirname, 'blog.html'));
+});
+
+app.get('/careers', (req, res) => {
+    res.sendFile(path.join(__dirname, 'careers.html'));
+});
+
 app.use(express.static('public')); // Serve public directory files
 app.use(express.static('.')); // Serve frontend files
 

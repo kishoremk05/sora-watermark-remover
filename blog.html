@@ -1,0 +1,36 @@
+﻿<!DOCTYPE html>
+<html lang=\"en\" data-theme=\"light\">
+<head>
+    <meta charset=\"UTF-8\">
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+    <title>Blog — SoraClean</title>
+    <link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap\" rel=\"stylesheet\">
+    <link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css\">
+    <link rel=\"stylesheet\" href=\"/styles.css\">
+</head>
+<body>
+    <button id=\"themeToggle\" class=\"theme-toggle\"><i class=\"fas fa-moon\" id=\"themeIcon\"></i></button>
+    <header class=\"site-header\">
+        <div class=\"header-inner\">
+            <a href=\"/home\" class=\"logo\">
+                <div class=\"logo-icon\"><i class=\"fas fa-play\"></i></div>
+                <span class=\"logo-text\">Sora<span class=\"logo-accent\">Clean</span></span>
+            </a>
+        </div>
+    </header>
+    <section class=\"section\" style=\"padding-top:120px;\">
+        <div class=\"container\" style=\"max-width:800px;text-align:center;\">
+            <h1 class=\"section-title\">Blog</h1>
+            <p style=\"color:var(--text-secondary);margin:20px 0;\">Coming Soon</p>
+            <div style=\"background:var(--card-bg);padding:60px 40px;border-radius:16px;margin-top:40px;\">
+                <i class=\"fas fa-newspaper\" style=\"font-size:48px;color:var(--accent);margin-bottom:20px;\"></i>
+                <h3>Stay Tuned</h3>
+                <p style=\"color:var(--text-secondary);margin-top:10px;\">We're working on bringing you helpful content about video editing, AI technology, and more.</p>
+            </div>
+        </div>
+    </section>
+    <script src=\"/public/js/config.js\"></script>
+    <script src=\"/public/js/auth.js\"></script>
+    <script>(function(){const t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t);const b=document.getElementById('themeToggle'),i=document.getElementById('themeIcon');function u(){i.className=document.documentElement.getAttribute('data-theme')==='dark'?'fas fa-sun':'fas fa-moon'}u();b.addEventListener('click',()=>{const d=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',d);localStorage.setItem('theme',d);u()})})();</script>
+</body>
+</html>

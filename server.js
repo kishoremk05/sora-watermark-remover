@@ -37,6 +37,10 @@ app.use(cors());
 app.use(express.json());
 
 // Serve clean URLs without .html extension
+app.get('/home', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
 app.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname, 'login.html'));
 });

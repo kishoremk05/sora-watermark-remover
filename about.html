@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blog — SoraClean</title>
+    <title>About — SoraClean</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -29,7 +29,7 @@
                 <a href="/home#features" class="nav-link">Features</a>
                 <a href="/home#how-it-works" class="nav-link">How It Works</a>
                 <a href="/pricing" class="nav-link">Pricing</a>
-                <a href="/about" class="nav-link">About</a>
+                <a href="/about" class="nav-link active">About</a>
             </nav>
 
             <div class="header-actions" id="authButtons">
@@ -45,20 +45,32 @@
 
     <!-- Content Area -->
     <main class="section" style="padding-top:140px; min-height: 80vh;">
-        <div class="container" style="max-width: 800px; margin: 0 auto; text-align: center;">
-            <div class="section-header" style="margin-bottom: 60px;">
-                <span class="section-tag">Insights</span>
-                <h1 class="section-title">SoraClean Blog</h1>
-                <p class="section-subtitle">Tips, tutorials, and insights into the world of AI video processing.</p>
+        <div class="container" style="max-width: 800px; margin: 0 auto;">
+            <div class="section-header" style="text-align: center; margin-bottom: 60px;">
+                <span class="section-tag">Our Story</span>
+                <h1 class="section-title">About SoraClean</h1>
+                <p class="section-subtitle">We're on a mission to help creators get the most out of Sora videos without the visual clutter of watermarks.</p>
             </div>
 
-            <div style="background:var(--card-bg); padding:80px 40px; border-radius:32px; border: 1px solid var(--border); margin: 40px 0;">
-                <div style="font-size: 64px; color: var(--accent); margin-bottom: 30px;">
-                    <i class="fas fa-newspaper"></i>
+            <div class="about-content" style="line-height:1.8; color:var(--text-secondary); font-size: 1.1rem;">
+                <h2 style="color:var(--text-primary); margin-bottom: 20px;">Why We Started</h2>
+                <p style="margin-bottom: 30px;">
+                    Sora represents a giant leap in AI video generation, but the automatic watermarking can sometimes detract from the professional presentation of your creative work. SoraClean was built to provide a fast, reliable, and high-quality solution for removing these watermarks instantly.
+                </p>
+
+                <h2 style="color:var(--text-primary); margin-bottom: 20px;">Our Technology</h2>
+                <p style="margin-bottom: 30px;">
+                    Using state-of-the-art AI inpainting and video processing algorithms, we analyze your videos frame by frame to seamlessly remove watermarks while preserving as much of the original detail as possible.
+                </p>
+
+                <div style="background:var(--card-bg); padding:40px; border-radius:24px; border: 1px solid var(--border); margin: 40px 0; text-align: center;">
+                    <h3 style="color:var(--text-primary); margin-bottom: 15px;">Fast. Reliable. Professional.</h3>
+                    <p style="color:var(--text-muted);">Join thousands of creators who trust SoraClean for their video processing needs.</p>
                 </div>
-                <h2 style="color:var(--text-primary); margin-bottom: 15px;">New Articles Coming Soon</h2>
-                <p style="color:var(--text-secondary); max-width: 500px; margin: 0 auto 30px;">
-                    We are crafting interesting stories and technical deep-dives for you. Subscribe to our newsletter to be the first to know when we launch our blog.
+
+                <h2 style="color:var(--text-primary); margin-bottom: 20px;">The Team</h2>
+                <p>
+                    We are a small team of AI researchers and developers passionate about creative tools. We're constantly improving our models to ensure you get the best possible results every time.
                 </p>
             </div>
         </div>
@@ -118,6 +130,7 @@
     <script src="/public/js/config.js"></script>
     <script src="/public/js/auth.js"></script>
     <script>
+        // Theme toggle logic (inline for immediate execution)
         (function() {
             const saved = localStorage.getItem('theme');
             if (saved) document.documentElement.setAttribute('data-theme', saved);

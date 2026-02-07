@@ -36,6 +36,23 @@ console.log('===================================\n');
 app.use(cors());
 app.use(express.json());
 
+// Redirect .html URLs to clean URLs
+app.get('/index.html', (req, res) => {
+    res.redirect(301, '/home');
+});
+
+app.get('/login.html', (req, res) => {
+    res.redirect(301, '/login');
+});
+
+app.get('/pricing.html', (req, res) => {
+    res.redirect(301, '/pricing');
+});
+
+app.get('/dashboard.html', (req, res) => {
+    res.redirect(301, '/dashboard');
+});
+
 // Serve clean URLs without .html extension
 app.get('/home', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));

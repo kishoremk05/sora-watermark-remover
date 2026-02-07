@@ -35,10 +35,8 @@ console.log('===================================\n');
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static('public')); // Serve public directory files
-app.use(express.static('.')); // Serve frontend files
 
-// URL rewriting middleware for clean URLs (remove .html extension)
+// URL rewriting middleware for clean URLs (MUST be before static file serving)
 app.use((req, res, next) => {
     // Map clean URLs to .html files
     const urlMap = {
@@ -55,6 +53,9 @@ app.use((req, res, next) => {
     
     next();
 });
+
+app.use(express.static('public')); // Serve public directory files
+app.use(express.static('.')); // Serve frontend files
 
 // Configure multer for file uploads
 const upload = multer({

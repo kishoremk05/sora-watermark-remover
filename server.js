@@ -35,6 +35,7 @@ console.log('===================================\n');
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(express.static('public')); // Serve public directory files
 app.use(express.static('.')); // Serve frontend files
 
 // Configure multer for file uploads

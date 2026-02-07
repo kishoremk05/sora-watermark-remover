@@ -22,18 +22,18 @@
     <!-- Header -->
     <header class="site-header">
         <div class="header-inner">
-            <a href="/index.html" class="logo">
+            <a href="/" class="logo">
                 <div class="logo-icon"><i class="fas fa-play"></i></div>
                 <span class="logo-text">Sora<span class="logo-accent">Clean</span></span>
             </a>
             <nav class="main-nav">
-                <a href="/index.html" class="nav-link">Home</a>
-                <a href="/index.html#features" class="nav-link">Features</a>
-                <a href="/pricing.html" class="nav-link" style="color:var(--accent);">Pricing</a>
+                <a href="/" class="nav-link">Home</a>
+                <a href="/#features" class="nav-link">Features</a>
+                <a href="/pricing" class="nav-link" style="color:var(--accent);">Pricing</a>
             </nav>
             <div class="header-actions" id="authButtons">
-                <a href="/login.html" class="btn btn-ghost">Sign In</a>
-                <a href="/login.html" class="btn btn-primary">Get Started <i class="fas fa-arrow-right"></i></a>
+                <a href="/login" class="btn btn-ghost">Sign In</a>
+                <a href="/login" class="btn btn-primary">Get Started <i class="fas fa-arrow-right"></i></a>
             </div>
             <button class="mobile-menu-btn" id="mobileMenuBtn">
                 <span></span><span></span><span></span>
@@ -43,12 +43,12 @@
 
     <!-- Mobile Menu -->
     <div class="mobile-menu" id="mobileMenu">
-        <a href="/index.html" class="mobile-nav-link">Home</a>
-        <a href="/index.html#features" class="mobile-nav-link">Features</a>
-        <a href="/pricing.html" class="mobile-nav-link">Pricing</a>
+        <a href="/" class="mobile-nav-link">Home</a>
+        <a href="/#features" class="mobile-nav-link">Features</a>
+        <a href="/pricing" class="mobile-nav-link">Pricing</a>
         <div class="mobile-menu-actions" id="mobileAuthButtons">
-            <a href="/login.html" class="btn btn-ghost w-full">Sign In</a>
-            <a href="/login.html" class="btn btn-primary w-full">Get Started</a>
+            <a href="/login" class="btn btn-ghost w-full">Sign In</a>
+            <a href="/login" class="btn btn-primary w-full">Get Started</a>
         </div>
     </div>
 
@@ -224,7 +224,7 @@
         async function purchasePlan(planId) {
             const session = await checkAuth();
             if (!session) {
-                window.location.href = '/login.html?redirect=/pricing.html';
+                window.location.href = '/login?redirect=/pricing';
                 return;
             }
             try {
@@ -239,7 +239,7 @@
                 const data = await response.json();
                 if (data.success) {
                     alert('Plan purchased successfully! Redirecting to dashboard...');
-                    window.location.href = '/dashboard.html';
+                    window.location.href = '/dashboard';
                 } else {
                     alert('Purchase failed: ' + (data.error || 'Unknown error'));
                 }

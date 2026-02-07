@@ -177,7 +177,7 @@ const API_BASE = window.location.hostname === 'localhost'
             // Save video URL for after login
             localStorage.setItem('pendingVideoUrl', videoUrl);
             // Redirect to login with return URL
-            window.location.href = '/login.html?redirect=dashboard&action=process';
+            window.location.href = '/login?redirect=dashboard&action=process';
             return;
         }
 
@@ -251,7 +251,7 @@ const API_BASE = window.location.hostname === 'localhost'
                 if (response.status === 401) {
                     // Token expired or invalid, redirect to login
                     localStorage.setItem('pendingVideoUrl', videoUrl);
-                    window.location.href = '/login.html?redirect=dashboard&action=process';
+                    window.location.href = '/login?redirect=dashboard&action=process';
                     return;
                 }
                 if (response.status === 403 && result.needsPurchase) {

@@ -95,7 +95,7 @@ async function requireAuth() {
     const session = await checkAuth();
     
     if (!session) {
-        window.location.href = '/login.html?redirect=' + encodeURIComponent(window.location.pathname);
+        window.location.href = '/login?redirect=' + encodeURIComponent(window.location.pathname);
         return null;
     }
     
@@ -113,11 +113,11 @@ async function updateNavigation() {
     if (session) {
         // User is logged in
         const loggedInHtml = `
-            <a href="/dashboard.html" class="btn btn-ghost">Dashboard</a>
+            <a href="/dashboard" class="btn btn-ghost">Dashboard</a>
             <button onclick="signOut()" class="btn btn-primary"><i class="fas fa-sign-out-alt"></i> Sign Out</button>
         `;
         const mobileLoggedInHtml = `
-            <a href="/dashboard.html" class="btn btn-ghost w-full">Dashboard</a>
+            <a href="/dashboard" class="btn btn-ghost w-full">Dashboard</a>
             <button onclick="signOut()" class="btn btn-primary w-full">Sign Out</button>
         `;
         if (authButtons) authButtons.innerHTML = loggedInHtml;
@@ -125,12 +125,12 @@ async function updateNavigation() {
     } else {
         // User is not logged in
         const loggedOutHtml = `
-            <a href="/login.html" class="btn btn-ghost">Sign In</a>
-            <a href="/login.html" class="btn btn-primary">Get Started <i class="fas fa-arrow-right"></i></a>
+            <a href="/login" class="btn btn-ghost">Sign In</a>
+            <a href="/login" class="btn btn-primary">Get Started <i class="fas fa-arrow-right"></i></a>
         `;
         const mobileLoggedOutHtml = `
-            <a href="/login.html" class="btn btn-ghost w-full">Sign In</a>
-            <a href="/login.html" class="btn btn-primary w-full">Get Started</a>
+            <a href="/login" class="btn btn-ghost w-full">Sign In</a>
+            <a href="/login" class="btn btn-primary w-full">Get Started</a>
         `;
         if (authButtons) authButtons.innerHTML = loggedOutHtml;
         if (mobileAuthButtons) mobileAuthButtons.innerHTML = mobileLoggedOutHtml;

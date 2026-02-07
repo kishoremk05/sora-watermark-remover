@@ -38,6 +38,24 @@ app.use(express.json());
 app.use(express.static('public')); // Serve public directory files
 app.use(express.static('.')); // Serve frontend files
 
+// URL rewriting middleware for clean URLs (remove .html extension)
+app.use((req, res, next) => {
+    // Map clean URLs to .html files
+    const urlMap = {
+        '/login': '/login.html',
+        '/pricing': '/pricing.html',
+        '/dashboard': '/dashboard.html',
+        '/': '/index.html'
+    };
+    
+    // If the requested URL is in our map, rewrite it
+    if (urlMap[req.path]) {
+        req.url = urlMap[req.path];
+    }
+    
+    next();
+});
+
 // Configure multer for file uploads
 const upload = multer({
     dest: 'uploads/',

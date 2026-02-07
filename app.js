@@ -1,230 +1,298 @@
-// Frontend JavaScript for Video Watermark Remover
+// ===== SoraClean — Frontend App =====
 
-// Detect if we're in production or development
-const API_URL = window.location.hostname === 'localhost' 
+// API URL detection
+const API_BASE = window.location.hostname === 'localhost' 
     ? 'http://localhost:5000/api' 
     : '/api';
 
-// DOM Elements
-const videoUrlInput = document.getElementById('videoUrlInput');
-const processBtn = document.getElementById('processBtn');
-const uploadSection = document.getElementById('uploadSection');
-const processingSection = document.getElementById('processingSection');
-const resultSection = document.getElementById('resultSection');
-const errorSection = document.getElementById('errorSection');
-const errorMessage = document.getElementById('errorMessage');
-const progressBar = document.getElementById('progressBar');
-const progressText = document.getElementById('progressText');
-const resultVideo = document.getElementById('resultVideo');
-const downloadBtn = document.getElementById('downloadBtn');
-const processAnotherBtn = document.getElementById('processAnotherBtn');
-const retryBtn = document.getElementById('retryBtn');
-
-// Validate Sora URL
-function validateSoraUrl(url) {
-    if (!url || url.trim() === '') {
-        showError('Please enter a Sora video URL');
-        return false;
+// ===== THEME TOGGLE =====
+(function initTheme() {
+    const saved = localStorage.getItem('theme');
+    if (saved) {
+        document.documentElement.setAttribute('data-theme', saved);
     }
-    
-    if (!url.startsWith('https://sora.chatgpt.com/')) {
-        showError('Invalid URL. Must be a Sora video URL starting with https://sora.chatgpt.com/');
-        return false;
+    const toggle = document.getElementById('themeToggle');
+    const icon = document.getElementById('themeIcon');
+    if (!toggle || !icon) return;
+
+    function updateIcon() {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
     }
-    
-    return true;
-}
+    updateIcon();
 
-// Show error
-function showError(message) {
-    errorMessage.innerHTML = message;
-    errorSection.classList.remove('hidden');
-    errorSection.classList.remove('bg-green-50', 'border-green-200');
-    errorSection.classList.add('bg-red-50', 'border-red-200');
-    processingSection.classList.add('hidden');
-}
+    toggle.addEventListener('click', () => {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        const next = isDark ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('theme', next);
+        updateIcon();
+    });
+})();
 
-// Update progress
-function updateProgress(percent) {
-    progressBar.style.width = percent + '%';
-    progressText.textContent = Math.round(percent) + '%';
-}
 
-// Process video
-async function processVideo() {
-    const videoUrl = videoUrlInput.value.trim();
-    
-    if (!validateSoraUrl(videoUrl)) return;
-    
-    // Hide all sections, show processing
-    uploadSection.classList.add('hidden');
-    processingSection.classList.remove('hidden');
-    errorSection.classList.add('hidden');
-    resultSection.classList.add('hidden');
-    
-    // Simulate progress
-    let progress = 0;
-    const progressInterval = setInterval(() => {
-        progress += Math.random() * 5;
-        if (progress > 90) progress = 90;
-        updateProgress(progress);
-    }, 1000);
-    
-    try {
-        const response = await fetch(`${API_URL}/remove-watermark`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ videoUrl })
+// ===== MOBILE MENU =====
+(function initMobileMenu() {
+    const btn = document.getElementById('mobileMenuBtn');
+    const menu = document.getElementById('mobileMenu');
+    if (!btn || !menu) return;
+
+    btn.addEventListener('click', () => {
+        menu.classList.toggle('active');
+        btn.classList.toggle('active');
+    });
+
+    // Close on link click
+    menu.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            menu.classList.remove('active');
+            btn.classList.remove('active');
         });
-        
-        clearInterval(progressInterval);
-        updateProgress(100);
-        
-        const result = await response.json();
-        
-        // Check if it's a 202 (task created, now poll for result)
-        if (response.status === 202 && result.taskId) {
-            console.log('Task created, polling for result...');
-            
-            // Poll for task completion
-            const pollForResult = async () => {
-                const maxAttempts = 60; // 2 minutes max
-                const pollInterval = 2000; // 2 seconds
-                
+    });
+})();
+
+
+// ===== SCROLL ANIMATIONS =====
+(function initScrollAnimations() {
+    const observer = new IntersectionObserver(
+        (entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        },
+        { threshold: 0.1, rootMargin: '0px 0px -60px 0px' }
+    );
+
+    document.querySelectorAll('.anim-slide-up, .anim-fade-in').forEach(el => {
+        observer.observe(el);
+    });
+})();
+
+
+// ===== PASTE BUTTON (Hero) =====
+(function initPasteButton() {
+    const pasteBtn = document.getElementById('pasteBtn');
+    const input = document.getElementById('heroVideoUrl');
+    if (!pasteBtn || !input) return;
+
+    pasteBtn.addEventListener('click', async () => {
+        try {
+            const text = await navigator.clipboard.readText();
+            input.value = text;
+            input.focus();
+            // Flash feedback
+            pasteBtn.innerHTML = '<i class="fas fa-check"></i><span>Pasted!</span>';
+            pasteBtn.style.color = 'var(--success)';
+            setTimeout(() => {
+                pasteBtn.innerHTML = '<i class="fas fa-paste"></i><span>Paste</span>';
+                pasteBtn.style.color = '';
+            }, 1500);
+        } catch (e) {
+            // Fallback: just focus
+            input.focus();
+        }
+    });
+})();
+
+
+// ===== CONTACT FORM =====
+(function initContactForm() {
+    const form = document.getElementById('contactForm');
+    if (!form) return;
+
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        alert('Thank you for your message! We\'ll get back to you within 24 hours.');
+        form.reset();
+    });
+})();
+
+
+// ===== HERO VIDEO PROCESSING (Landing Page) =====
+(function initHeroProcessing() {
+    const processBtn = document.getElementById('heroProcessBtn');
+    const urlInput = document.getElementById('heroVideoUrl');
+    const uploadBox = document.getElementById('heroUploadBox');
+    const processingEl = document.getElementById('heroProcessing');
+    const resultEl = document.getElementById('heroResult');
+    const errorEl = document.getElementById('heroError');
+    const progressBar = document.getElementById('heroProgressBar');
+    const progressText = document.getElementById('heroProgressText');
+    const resultVideo = document.getElementById('heroResultVideo');
+    const downloadBtn = document.getElementById('heroDownloadBtn');
+    const processAnother = document.getElementById('heroProcessAnother');
+    const retryBtn = document.getElementById('heroRetryBtn');
+    const errorMessage = document.getElementById('heroErrorMessage');
+
+    // Exit if not on the landing page
+    if (!processBtn || !urlInput) return;
+
+    function showSection(section) {
+        [uploadBox, processingEl, resultEl, errorEl].forEach(el => {
+            if (el) el.classList.add('hidden');
+        });
+        if (section) section.classList.remove('hidden');
+    }
+
+    function updateProgress(percent) {
+        if (progressBar) progressBar.style.width = percent + '%';
+        if (progressText) progressText.textContent = Math.round(percent) + '%';
+    }
+
+    function showError(msg) {
+        if (errorMessage) errorMessage.textContent = msg;
+        showSection(errorEl);
+        if (uploadBox) uploadBox.classList.remove('hidden');
+    }
+
+    function showSuccess(videoUrl) {
+        if (resultVideo) resultVideo.src = videoUrl;
+        if (downloadBtn) {
+            downloadBtn.href = videoUrl;
+            downloadBtn.download = 'clean_sora_video.mp4';
+        }
+        showSection(resultEl);
+    }
+
+    // Process button click
+    processBtn.addEventListener('click', async () => {
+        const videoUrl = urlInput.value.trim();
+
+        if (!videoUrl) {
+            showError('Please enter a Sora video URL');
+            return;
+        }
+
+        if (!videoUrl.startsWith('https://sora.chatgpt.com/')) {
+            showError('Invalid URL. Must start with https://sora.chatgpt.com/');
+            return;
+        }
+
+        // Check authentication before processing
+        const session = await checkAuth();
+        if (!session) {
+            // Save video URL for after login
+            localStorage.setItem('pendingVideoUrl', videoUrl);
+            // Redirect to login with return URL
+            window.location.href = '/login.html?redirect=dashboard&action=process';
+            return;
+        }
+
+        showSection(processingEl);
+        updateProgress(0);
+
+        let progress = 0;
+        const progressInterval = setInterval(() => {
+            progress += Math.random() * 5;
+            if (progress > 90) progress = 90;
+            updateProgress(progress);
+        }, 1000);
+
+        try {
+            const response = await fetch(`${API_BASE}/remove-watermark`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${session.access_token}`
+                },
+                body: JSON.stringify({ videoUrl })
+            });
+
+            clearInterval(progressInterval);
+            updateProgress(100);
+
+            const result = await response.json();
+
+            if (response.status === 202 && result.taskId) {
+                // Poll for result
+                const maxAttempts = 60;
+                const pollDelay = 2000;
+
                 for (let i = 0; i < maxAttempts; i++) {
-                    await new Promise(resolve => setTimeout(resolve, pollInterval));
-                    
+                    await new Promise(r => setTimeout(r, pollDelay));
                     try {
-                        const pollResponse = await fetch(`${API_URL}/task/${result.taskId}`);
-                        const pollResult = await pollResponse.json();
-                        
-                        console.log(`Poll attempt ${i + 1}: ${pollResult.status}`);
-                        
-                        if (pollResult.status === 'completed' && pollResult.videoUrl) {
-                            // Success! Video is ready
-                            console.log('Video ready:', pollResult.videoUrl);
-                            
-                            // Use the proxy URL directly - no need to fetch as blob
-                            // The server proxies the video, so we can use it directly
-                            const videoURL = pollResult.videoUrl;
-                            
-                            // Show result
-                            resultVideo.src = videoURL;
-                            downloadBtn.href = videoURL;
-                            downloadBtn.download = 'clean_sora_video.mp4';
-                            
-                            // Hide all other sections and show result
-                            processingSection.classList.add('hidden');
-                            errorSection.classList.add('hidden');
-                            uploadSection.classList.add('hidden');
-                            resultSection.classList.remove('hidden');
+                        const pollRes = await fetch(`${API_BASE}/task/${result.taskId}`, {
+                            headers: {
+                                'Authorization': `Bearer ${session.access_token}`
+                            }
+                        });
+                        const pollData = await pollRes.json();
+
+                        if (pollData.status === 'completed' && pollData.videoUrl) {
+                            showSuccess(pollData.videoUrl);
                             return;
                         }
-                        
-                        if (pollResult.status === 'failed') {
-                            throw new Error(pollResult.error || 'Processing failed');
+                        if (pollData.status === 'failed') {
+                            throw new Error(pollData.error || 'Processing failed');
                         }
-                        
-                    } catch (pollError) {
-                        console.error('Poll error:', pollError);
+                    } catch (pollErr) {
+                        console.error('Poll error:', pollErr);
                     }
                 }
-                
-                // Timeout - show dashboard link
-                throw new Error('Processing timeout. Please check Kie AI dashboard.');
-            };
-            
-            try {
-                await pollForResult();
-                // If polling succeeded, we're done - exit the function
-                return;
-            } catch (pollError) {
-                processingSection.classList.add('hidden');
-                
-                // Show fallback message with dashboard link
-                errorMessage.innerHTML = `
-                <div class="text-center">
-                    <svg class="mx-auto h-16 w-16 text-green-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    <h3 class="text-2xl font-bold text-gray-800 mb-4">✨ Task Created Successfully!</h3>
-                    <p class="text-gray-700 mb-4">Your video is being processed by Kie AI.</p>
-                    
-                    <div class="bg-blue-50 border-2 border-blue-200 rounded-lg p-4 mb-4">
-                        <p class="font-semibold text-blue-900 mb-2">📋 Task ID:</p>
-                        <code class="text-sm text-blue-700 bg-white px-3 py-1 rounded break-all">${result.taskId}</code>
-                    </div>
-                    
-                    <div class="bg-purple-50 border-2 border-purple-200 rounded-lg p-4 mb-4">
-                        <p class="text-sm text-purple-800">
-                            <strong>⏱️ Estimated processing time:</strong> ${result.estimatedTime || '10-30 seconds'}
-                        </p>
-                    </div>
-                    
-                    <a href="${result.dashboardUrl}" target="_blank" 
-                       class="inline-block bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8 py-4 rounded-lg font-semibold text-lg hover:from-purple-700 hover:to-blue-700 transition-all transform hover:scale-105 mb-4 shadow-lg">
-                        🌐 Open Kie AI Dashboard
-                    </a>
-                    
-                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mt-4 text-left">
-                        <p class="text-sm text-gray-700 mb-2">
-                            <strong>📝 Instructions:</strong>
-                        </p>
-                        <ol class="text-sm text-gray-600 space-y-1 list-decimal list-inside">
-                            <li>Click the button above to open your Kie AI dashboard</li>
-                            <li>Find your task using the Task ID shown above</li>
-                            <li>Download your watermark-free video (ready in ~${result.estimatedTime || '30 seconds'})</li>
-                        </ol>
-                    </div>
-                    
-                    <p class="text-xs text-gray-400 mt-4 italic">
-                        💡 Note: Kie AI's query endpoints are not publicly accessible, so results must be retrieved from the dashboard.
-                    </p>
-                </div>
-                `;
-                errorSection.classList.remove('hidden');
-                errorSection.classList.remove('bg-red-50', 'border-red-200');
-                errorSection.classList.add('bg-green-50', 'border-green-200');
-                uploadSection.classList.remove('hidden');
+
+                // Timeout fallback
+                if (errorMessage) {
+                    errorMessage.innerHTML = `
+                        Task created successfully (ID: <code style="font-size:12px;background:var(--bg-tertiary);padding:2px 6px;border-radius:4px;">${result.taskId}</code>). 
+                        Processing is taking longer than expected. 
+                        ${result.dashboardUrl ? `<a href="${result.dashboardUrl}" target="_blank" style="color:var(--accent);font-weight:600;">Open Kie AI Dashboard →</a>` : ''}
+                    `;
+                }
+                showSection(errorEl);
+                if (uploadBox) uploadBox.classList.remove('hidden');
                 return;
             }
+
+            if (!response.ok) {
+                // Check for specific error codes
+                if (response.status === 401) {
+                    // Token expired or invalid, redirect to login
+                    localStorage.setItem('pendingVideoUrl', videoUrl);
+                    window.location.href = '/login.html?redirect=dashboard&action=process';
+                    return;
+                }
+                if (response.status === 403 && result.needsPurchase) {
+                    // No credits, redirect to pricing
+                    showError(result.message || 'Insufficient credits. Please purchase a plan to continue.');
+                    return;
+                }
+                throw new Error(result.error || result.details || 'Failed to process video');
+            }
+
+            throw new Error('Unexpected response from server. Please try again.');
+
+        } catch (error) {
+            clearInterval(progressInterval);
+            console.error('Error:', error);
+            showError(error.message || 'An error occurred. Please try again.');
         }
-        
-        // If not 202 and not ok, it's an error
-        if (!response.ok) {
-            throw new Error(result.error || result.details || 'Failed to process video');
-        }
-        
-        // Note: The API now always returns 202 for async processing
-        // If we get here with a 200, it means the response was already handled
-        // This is a fallback that shouldn't normally be reached
-        throw new Error('Unexpected response from server. Please try again.');
-        
-    } catch (error) {
-        clearInterval(progressInterval);
-        console.error('Error:', error);
-        showError(error.message || 'An error occurred while processing your video. Please try again.');
-        uploadSection.classList.remove('hidden');
+    });
+
+    // Process another
+    if (processAnother) {
+        processAnother.addEventListener('click', () => {
+            urlInput.value = '';
+            if (resultVideo) resultVideo.src = '';
+            updateProgress(0);
+            showSection(uploadBox);
+        });
     }
-}
 
-// Process button handler
-processBtn.addEventListener('click', processVideo);
+    // Retry
+    if (retryBtn) {
+        retryBtn.addEventListener('click', () => {
+            showSection(uploadBox);
+        });
+    }
+})();
 
-// Process another video
-processAnotherBtn.addEventListener('click', () => {
-    videoUrlInput.value = '';
-    resultSection.classList.add('hidden');
-    uploadSection.classList.remove('hidden');
-    resultVideo.src = '';
-    updateProgress(0);
-    errorSection.classList.add('hidden');
-});
 
-// Retry button
-retryBtn.addEventListener('click', () => {
-    errorSection.classList.add('hidden');
-    uploadSection.classList.remove('hidden');
+// ===== AUTH NAVIGATION UPDATE =====
+document.addEventListener('DOMContentLoaded', () => {
+    if (typeof updateNavigation === 'function') {
+        updateNavigation();
+    }
 });

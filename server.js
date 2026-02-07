@@ -9,6 +9,16 @@ const fs = require('fs');
 const path = require('path');
 require('dotenv').config();
 
+// Import Supabase and services
+const { supabase } = require('./services/supabase');
+const { authenticateUser, optionalAuth } = require('./middleware/auth');
+const { 
+    checkUserCredits, 
+    deductCredit, 
+    getUserSubscriptionSummary,
+    createSubscription 
+} = require('./services/credits');
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -54,6 +64,102 @@ const pendingTasks = new Map();
 // Health check endpoint
 app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', message: 'Server is running' });
+});
+
+// ============================================
+// USER & SUBSCRIPTION MANAGEMENT ENDPOINTS
+// ============================================
+
+// Get current user profile
+app.get('/api/user/profile', authenticateUser, async (req, res) => {
+    try {
+        const { data, error } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', req.user.id)
+            .single();
+        
+        if (error) throw error;
+        
+        res.json({ success: true, profile: data });
+    } catch (error) {
+        console.error('Error fetching profile:', error);
+        res.status(500).json({ error: 'Failed to fetch profile' });
+    }
+});
+
+// Get user's subscription and credits
+app.get('/api/user/subscription', authenticateUser, async (req, res) => {
+    try {
+        const summary = await getUserSubscriptionSummary(req.user.id);
+        res.json({ success: true, ...summary });
+    } catch (error) {
+        console.error('Error fetching subscription:', error);
+        res.status(500).json({ error: 'Failed to fetch subscription' });
+    }
+});
+
+// Get user's video processing history
+app.get('/api/user/history', authenticateUser, async (req, res) => {
+    try {
+        const { data, error } = await supabase
+            .from('video_processing_history')
+            .select('*')
+            .eq('user_id', req.user.id)
+            .order('created_at', { ascending: false })
+            .limit(50);
+        
+        if (error) throw error;
+        
+        res.json({ success: true, history: data });
+    } catch (error) {
+        console.error('Error fetching history:', error);
+        res.status(500).json({ error: 'Failed to fetch history' });
+    }
+});
+
+// Get all available subscription plans
+app.get('/api/plans', async (req, res) => {
+    try {
+        const { data, error } = await supabase
+            .from('subscription_plans')
+            .select('*')
+            .eq('is_active', true)
+            .order('price', { ascending: true });
+        
+        if (error) throw error;
+        
+        res.json({ success: true, plans: data });
+    } catch (error) {
+        console.error('Error fetching plans:', error);
+        res.status(500).json({ error: 'Failed to fetch plans' });
+    }
+});
+
+// Purchase a subscription plan
+app.post('/api/purchase', authenticateUser, async (req, res) => {
+    try {
+        const { planId, paymentId } = req.body;
+        
+        if (!planId) {
+            return res.status(400).json({ error: 'Plan ID is required' });
+        }
+        
+        // TODO: Integrate with actual payment provider
+        // For now, we'll create the subscription directly
+        // In production, verify payment first before creating subscription
+        
+        const subscription = await createSubscription(req.user.id, planId, paymentId);
+        
+        res.json({ 
+            success: true, 
+            message: 'Subscription created successfully',
+            subscription 
+        });
+    } catch (error) {
+        console.error('Error purchasing plan:', error);
+        res.status(500).json({ error: 'Failed to purchase plan' });
+    }
 });
 
 // Callback endpoint for Kie AI
@@ -181,7 +287,10 @@ async function downloadVideo(url) {
 }
 
 // Main watermark removal endpoint - accepts Sora video URL
-app.post('/api/remove-watermark', async (req, res) => {
+app.post('/api/remove-watermark', authenticateUser, async (req, res) => {
+    let historyId = null;
+    let subscriptionId = null;
+    
     try {
         const { videoUrl } = req.body;
         
@@ -194,6 +303,38 @@ app.post('/api/remove-watermark', async (req, res) => {
             return res.status(400).json({ 
                 error: 'Invalid Sora URL. Must start with https://sora.chatgpt.com/' 
             });
+        }
+        
+        // Check if user has credits
+        const { hasCredits, subscription } = await checkUserCredits(req.user.id);
+        
+        if (!hasCredits || !subscription) {
+            return res.status(403).json({ 
+                error: 'Insufficient credits',
+                message: 'You need to purchase a plan to remove watermarks. Visit the pricing page to get started.',
+                needsPurchase: true
+            });
+        }
+        
+        subscriptionId = subscription.id;
+        console.log(`User ${req.user.email} has ${subscription.credits_remaining} credits remaining`);
+        
+        // Create processing history entry
+        const { data: historyEntry, error: historyError } = await supabase
+            .from('video_processing_history')
+            .insert({
+                user_id: req.user.id,
+                subscription_id: subscriptionId,
+                video_url: videoUrl,
+                status: 'processing'
+            })
+            .select()
+            .single();
+        
+        if (historyError) {
+            console.error('Error creating history entry:', historyError);
+        } else {
+            historyId = historyEntry.id;
         }
         
         console.log(`Processing Sora video: ${videoUrl}`);
@@ -227,9 +368,24 @@ app.post('/api/remove-watermark', async (req, res) => {
                 console.log('Playground Response:', JSON.stringify(playgroundResult, null, 2));
                 
                 if (playgroundResponse.ok && playgroundResult.resultUrls && playgroundResult.resultUrls.length > 0) {
-                    // Direct result!
+                    // Direct result! Deduct credit and update history
                     const cleanVideoUrl = playgroundResult.resultUrls[0];
                     console.log(`Clean video URL: ${cleanVideoUrl}`);
+                    
+                    // Deduct credit
+                    await deductCredit(subscriptionId);
+                    
+                    // Update history
+                    if (historyId) {
+                        await supabase
+                            .from('video_processing_history')
+                            .update({
+                                status: 'completed',
+                                processed_video_url: cleanVideoUrl,
+                                processing_completed_at: new Date().toISOString()
+                            })
+                            .eq('id', historyId);
+                    }
                     
                     const videoBuffer = await downloadVideo(cleanVideoUrl);
                     res.setHeader('Content-Type', 'video/mp4');
@@ -282,11 +438,24 @@ app.post('/api/remove-watermark', async (req, res) => {
                     console.log(`✅ Task created successfully: ${taskId}`);
                     console.log('⏳ Waiting for callback from Kie AI...');
                     
-                    // Initialize task tracking
+                    // Deduct credit immediately when task is created
+                    await deductCredit(subscriptionId);
+                    
+                    // Initialize task tracking with user and history info
                     pendingTasks.set(taskId, {
                         completed: false,
-                        timestamp: Date.now()
+                        timestamp: Date.now(),
+                        userId: req.user.id,
+                        historyId: historyId
                     });
+                    
+                    // Update history with task ID
+                    if (historyId) {
+                        await supabase
+                            .from('video_processing_history')
+                            .update({ task_id: taskId })
+                            .eq('id', historyId);
+                    }
                     
                     // Return task ID for frontend to poll
                     return res.status(202).json({
@@ -294,11 +463,25 @@ app.post('/api/remove-watermark', async (req, res) => {
                         message: 'Task created successfully! Processing your video...',
                         taskId: taskId,
                         pollUrl: `/api/task/${taskId}`,
-                        estimatedTime: '10-30 seconds'
+                        estimatedTime: '10-30 seconds',
+                        creditsRemaining: subscription.credits_remaining - 1
                     });
                     
                 } catch (jobError) {
                     console.error('Job API also failed:', jobError.message);
+                    
+                    // Update history as failed
+                    if (historyId) {
+                        await supabase
+                            .from('video_processing_history')
+                            .update({
+                                status: 'failed',
+                                error_message: jobError.message,
+                                processing_completed_at: new Date().toISOString()
+                            })
+                            .eq('id', historyId);
+                    }
+                    
                     throw jobError;
                 }
             }
@@ -308,6 +491,18 @@ app.post('/api/remove-watermark', async (req, res) => {
         console.log('Using mock processing mode');
         console.log('To use real API: Set USE_REAL_API=true in .env file');
         
+        // Update history as failed in mock mode
+        if (historyId) {
+            await supabase
+                .from('video_processing_history')
+                .update({
+                    status: 'failed',
+                    error_message: 'Mock mode enabled',
+                    processing_completed_at: new Date().toISOString()
+                })
+                .eq('id', historyId);
+        }
+        
         return res.status(400).json({ 
             error: 'Mock mode enabled. Please provide a valid API key and set USE_REAL_API=true',
             details: 'The app is currently in demo mode and cannot process real videos'
@@ -315,6 +510,19 @@ app.post('/api/remove-watermark', async (req, res) => {
         
     } catch (error) {
         console.error('Error processing video:', error);
+        
+        // Update history as failed if we have a history ID
+        if (historyId) {
+            await supabase
+                .from('video_processing_history')
+                .update({
+                    status: 'failed',
+                    error_message: error.message,
+                    processing_completed_at: new Date().toISOString()
+                })
+                .eq('id', historyId);
+        }
+        
         res.status(500).json({ 
             error: 'Failed to process video',
             details: error.message 

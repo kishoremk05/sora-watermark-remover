@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing — SoraClean</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+    <!-- Theme Toggle -->
+    <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">
+        <i class="fas fa-moon" id="themeIcon"></i>
+    </button>
+
+    <!-- Header -->
+    <header class="site-header">
+        <div class="header-inner">
+            <a href="/index.html" class="logo">
+                <div class="logo-icon"><i class="fas fa-play"></i></div>
+                <span class="logo-text">Sora<span class="logo-accent">Clean</span></span>
+            </a>
+            <nav class="main-nav">
+                <a href="/index.html" class="nav-link">Home</a>
+                <a href="/index.html#features" class="nav-link">Features</a>
+                <a href="/pricing.html" class="nav-link" style="color:var(--accent);">Pricing</a>
+            </nav>
+            <div class="header-actions" id="authButtons">
+                <a href="/login.html" class="btn btn-ghost">Sign In</a>
+                <a href="/login.html" class="btn btn-primary">Get Started <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="/index.html" class="mobile-nav-link">Home</a>
+        <a href="/index.html#features" class="mobile-nav-link">Features</a>
+        <a href="/pricing.html" class="mobile-nav-link">Pricing</a>
+        <div class="mobile-menu-actions" id="mobileAuthButtons">
+            <a href="/login.html" class="btn btn-ghost w-full">Sign In</a>
+            <a href="/login.html" class="btn btn-primary w-full">Get Started</a>
+        </div>
+    </div>
+
+    <!-- Pricing Header -->
+    <div class="pricing-page-header">
+        <span class="section-tag">Pricing</span>
+        <h1>Choose Your Plan</h1>
+        <p>Select the perfect plan for your needs. All plans include AI-powered watermark removal and HD quality output.</p>
+    </div>
+
+    <!-- Pricing Cards -->
+    <section class="section" style="padding-top:0;">
+        <div class="container">
+            <div id="pricingPlans" class="pricing-grid">
+                <div style="grid-column:1/-1;text-align:center;padding:40px;">
+                    <div class="processing-spinner" style="margin:0 auto 12px;"></div>
+                    <p style="color:var(--text-muted);font-size:14px;">Loading plans...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- All Plans Include -->
+    <section class="section section-alt">
+        <div class="container" style="max-width:800px;">
+            <div class="all-plans-card">
+                <h3>All Plans Include</h3>
+                <div class="all-plans-grid">
+                    <div class="plan-feature-item">
+                        <i class="fas fa-check-circle"></i>
+                        <div>
+                            <h4>AI-Powered Processing</h4>
+                            <p>Advanced AI technology for clean results</p>
+                        </div>
+                    </div>
+                    <div class="plan-feature-item">
+                        <i class="fas fa-check-circle"></i>
+                        <div>
+                            <h4>HD Quality Output</h4>
+                            <p>Maintain original video quality</p>
+                        </div>
+                    </div>
+                    <div class="plan-feature-item">
+                        <i class="fas fa-check-circle"></i>
+                        <div>
+                            <h4>Fast Processing</h4>
+                            <p>Get results in seconds</p>
+                        </div>
+                    </div>
+                    <div class="plan-feature-item">
+                        <i class="fas fa-check-circle"></i>
+                        <div>
+                            <h4>Email Support</h4>
+                            <p>Get help when you need it</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">FAQ</span>
+                <h2 class="section-title">Frequently asked questions</h2>
+            </div>
+
+            <div class="faq-list">
+                <details class="faq-item">
+                    <summary><span>How do credits work?</span><i class="fas fa-chevron-down"></i></summary>
+                    <div class="faq-answer"><p>Each plan comes with a set number of video processing credits. One credit = one video watermark removal.</p></div>
+                </details>
+                <details class="faq-item">
+                    <summary><span>Do credits expire?</span><i class="fas fa-chevron-down"></i></summary>
+                    <div class="faq-answer"><p>No, your credits never expire. Use them at your own pace.</p></div>
+                </details>
+                <details class="faq-item">
+                    <summary><span>Can I purchase multiple plans?</span><i class="fas fa-chevron-down"></i></summary>
+                    <div class="faq-answer"><p>Yes! Credits from multiple plans stack together.</p></div>
+                </details>
+                <details class="faq-item">
+                    <summary><span>What payment methods do you accept?</span><i class="fas fa-chevron-down"></i></summary>
+                    <div class="faq-answer"><p>We accept all major credit cards and payment methods through our secure payment processor.</p></div>
+                </details>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-bottom" style="border-top:none;">
+                <p>&copy; 2026 SoraClean. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/public/js/config.js"></script>
+    <script src="/public/js/auth.js"></script>
+    <script>
+        // Theme toggle
+        (function() {
+            const saved = localStorage.getItem('theme');
+            if (saved) document.documentElement.setAttribute('data-theme', saved);
+            const toggle = document.getElementById('themeToggle');
+            const icon = document.getElementById('themeIcon');
+            function updateIcon() {
+                const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+                icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+            }
+            updateIcon();
+            toggle.addEventListener('click', () => {
+                const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+                const next = isDark ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', next);
+                localStorage.setItem('theme', next);
+                updateIcon();
+            });
+        })();
+
+        // Mobile menu
+        document.getElementById('mobileMenuBtn').addEventListener('click', () => {
+            document.getElementById('mobileMenu').classList.toggle('active');
+        });
+
+        let plans = [];
+
+        async function loadPlans() {
+            try {
+                const response = await fetch(`${API_URL}/api/plans`);
+                const data = await response.json();
+                if (data.success) {
+                    plans = data.plans;
+                    renderPlans();
+                }
+            } catch (error) {
+                console.error('Error loading plans:', error);
+                document.getElementById('pricingPlans').innerHTML = `
+                    <div style="grid-column:1/-1;text-align:center;color:var(--error);padding:40px;">
+                        Failed to load pricing plans. Please refresh the page.
+                    </div>
+                `;
+            }
+        }
+
+        function renderPlans() {
+            const container = document.getElementById('pricingPlans');
+            container.innerHTML = plans.map((plan, index) => `
+                <div class="pricing-card ${index === 1 ? 'popular' : ''}">
+                    ${index === 1 ? '<div class="popular-tag">Most Popular</div>' : ''}
+                    <div class="pricing-header">
+                        <h3>${plan.name}</h3>
+                        <p class="pricing-desc">${plan.description}</p>
+                        <div class="pricing-price">
+                            <span class="price-amount">$${plan.price}</span>
+                            <span class="price-period">${plan.video_credits} video credits</span>
+                        </div>
+                    </div>
+                    <ul class="pricing-features">
+                        ${plan.features.map(feature => `
+                            <li><i class="fas fa-check"></i> ${feature}</li>
+                        `).join('')}
+                    </ul>
+                    <button onclick="purchasePlan('${plan.id}')" class="btn ${index === 1 ? 'btn-primary' : 'btn-outline'} w-full">
+                        Get Started
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        async function purchasePlan(planId) {
+            const session = await checkAuth();
+            if (!session) {
+                window.location.href = '/login.html?redirect=/pricing.html';
+                return;
+            }
+            try {
+                const response = await fetch(`${API_URL}/api/purchase`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${session.access_token}`
+                    },
+                    body: JSON.stringify({ planId })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    alert('Plan purchased successfully! Redirecting to dashboard...');
+                    window.location.href = '/dashboard.html';
+                } else {
+                    alert('Purchase failed: ' + (data.error || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Error purchasing plan:', error);
+                alert('Failed to purchase plan. Please try again.');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadPlans();
+            updateNavigation();
+        });
+    </script>
+</body>
+</html>

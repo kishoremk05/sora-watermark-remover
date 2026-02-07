@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — SoraClean</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+    <!-- Theme Toggle -->
+    <button id="themeToggle" class="theme-toggle" aria-label="Toggle dark mode">
+        <i class="fas fa-moon" id="themeIcon"></i>
+    </button>
+
+    <!-- Header -->
+    <header class="site-header">
+        <div class="header-inner">
+            <a href="/index.html" class="logo">
+                <div class="logo-icon"><i class="fas fa-play"></i></div>
+                <span class="logo-text">Sora<span class="logo-accent">Clean</span></span>
+            </a>
+
+            <div class="header-actions">
+                <div class="credits-badge">
+                    <i class="fas fa-coins"></i>
+                    <span id="creditsDisplay">--</span> credits
+                </div>
+                <img id="userAvatar" src="" alt="User" class="hidden" style="width:34px;height:34px;border-radius:50%;object-fit:cover;border:2px solid var(--border-color);">
+                <button onclick="signOut()" class="btn btn-ghost">
+                    <i class="fas fa-sign-out-alt"></i> Sign Out
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="dash-layout">
+        <div class="container" style="max-width:860px;">
+            
+            <!-- Welcome -->
+            <div class="dash-welcome">
+                <h1>Welcome back, <span id="userName">User</span></h1>
+                <p>Remove watermarks from your Sora videos</p>
+            </div>
+
+            <!-- No Credits Warning -->
+            <div id="noCreditsWarning" class="no-credits-banner hidden">
+                <div class="warn-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                <div>
+                    <h3>No Credits Available</h3>
+                    <p>You need credits to process videos. Purchase a plan to continue.</p>
+                    <a href="/pricing.html" class="btn btn-primary">
+                        <i class="fas fa-crown"></i> View Plans
+                    </a>
+                </div>
+            </div>
+
+            <!-- Upload Section -->
+            <div id="uploadSection" class="dash-card">
+                <h2><i class="fas fa-wand-magic-sparkles" style="color:var(--accent);margin-right:8px;"></i> Remove Watermark</h2>
+                
+                <div class="dash-url-label">Sora Video URL</div>
+                <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
+                    <input type="url" id="videoUrlInput" class="dash-url-input" 
+                           placeholder="https://sora.chatgpt.com/p/s_..." 
+                           autocomplete="off" spellcheck="false">
+                    <button class="btn-paste" id="dashPasteBtn" title="Paste from clipboard">
+                        <i class="fas fa-paste"></i>
+                        <span>Paste</span>
+                    </button>
+                </div>
+
+                <div class="dash-example">
+                    <p>Example URL:</p>
+                    <code>https://sora.chatgpt.com/p/s_68e83bd7eee88191be79d2ba7158516f</code>
+                </div>
+
+                <button id="processBtn" onclick="processVideo()" class="btn btn-primary btn-lg w-full">
+                    <i class="fas fa-wand-magic-sparkles"></i> Remove Watermark
+                </button>
+            </div>
+
+            <!-- Processing Section -->
+            <div id="processingSection" class="dash-card hidden" style="text-align:center;padding:48px 28px;">
+                <div class="processing-spinner" style="margin:0 auto 20px;"></div>
+                <h3 style="font-size:20px;font-weight:700;color:var(--text-primary);margin-bottom:8px;">Processing Your Video</h3>
+                <p style="font-size:14px;color:var(--text-secondary);margin-bottom:24px;">AI is removing the watermark. Please wait...</p>
+                <div class="progress-track" style="margin-bottom:8px;">
+                    <div id="progressBar" class="progress-fill" style="width: 0%"></div>
+                </div>
+                <span class="progress-label" id="progressText">0%</span>
+            </div>
+
+            <!-- Result Section -->
+            <div id="resultSection" class="dash-card hidden">
+                <div style="text-align:center;margin-bottom:20px;">
+                    <div class="result-badge" style="margin-bottom:8px;">
+                        <i class="fas fa-circle-check"></i>
+                        <span>Watermark Removed Successfully</span>
+                    </div>
+                </div>
+                
+                <div class="result-video-wrap" style="margin-bottom:20px;">
+                    <video id="resultVideo" controls class="result-video"></video>
+                </div>
+
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                    <a id="downloadBtn" class="btn btn-primary btn-lg" style="justify-content:center;">
+                        <i class="fas fa-download"></i> Download
+                    </a>
+                    <button onclick="processAnother()" class="btn btn-outline btn-lg">
+                        <i class="fas fa-rotate"></i> Process Another
+                    </button>
+                </div>
+            </div>
+
+            <!-- Error Section -->
+            <div id="errorSection" class="dash-card hidden">
+                <div class="error-card">
+                    <i class="fas fa-circle-exclamation"></i>
+                    <p id="errorMessage"></p>
+                    <button onclick="processAnother()" class="btn btn-outline">
+                        <i class="fas fa-rotate-right"></i> Try Again
+                    </button>
+                </div>
+            </div>
+
+            <!-- History -->
+            <div class="dash-card">
+                <h2><i class="fas fa-clock-rotate-left" style="color:var(--accent);margin-right:8px;"></i> Recent History</h2>
+                <div id="historyList">
+                    <div class="empty-state">Loading history...</div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="/public/js/config.js"></script>
+    <script src="/public/js/auth.js"></script>
+    <script>
+        // Theme toggle
+        (function() {
+            const saved = localStorage.getItem('theme');
+            if (saved) document.documentElement.setAttribute('data-theme', saved);
+            const toggle = document.getElementById('themeToggle');
+            const icon = document.getElementById('themeIcon');
+            function updateIcon() {
+                const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+                icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+            }
+            updateIcon();
+            toggle.addEventListener('click', () => {
+                const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+                const next = isDark ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', next);
+                localStorage.setItem('theme', next);
+                updateIcon();
+            });
+        })();
+
+        // Paste button
+        document.getElementById('dashPasteBtn').addEventListener('click', async () => {
+            try {
+                const text = await navigator.clipboard.readText();
+                document.getElementById('videoUrlInput').value = text;
+                document.getElementById('videoUrlInput').focus();
+            } catch (e) {
+                document.getElementById('videoUrlInput').focus();
+            }
+        });
+
+        let session = null;
+        let currentTaskId = null;
+        let pollInterval = null;
+
+        async function initDashboard() {
+            session = await requireAuth();
+            if (!session) return;
+            await loadUserData();
+            await loadSubscription();
+            await loadHistory();
+            
+            // Check for pending video URL from homepage redirect
+            const pendingUrl = localStorage.getItem('pendingVideoUrl');
+            if (pendingUrl) {
+                document.getElementById('videoUrlInput').value = pendingUrl;
+                localStorage.removeItem('pendingVideoUrl');
+                // Focus the input to draw attention
+                document.getElementById('videoUrlInput').focus();
+            }
+        }
+
+        async function loadUserData() {
+            try {
+                const user = await getCurrentUser();
+                if (user) {
+                    document.getElementById('userName').textContent = user.user_metadata?.full_name || user.email.split('@')[0];
+                    if (user.user_metadata?.avatar_url) {
+                        const avatar = document.getElementById('userAvatar');
+                        avatar.src = user.user_metadata.avatar_url;
+                        avatar.classList.remove('hidden');
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading user data:', error);
+            }
+        }
+
+        async function loadSubscription() {
+            try {
+                const response = await fetch(`${API_URL}/api/user/subscription`, {
+                    headers: { 'Authorization': `Bearer ${session.access_token}` }
+                });
+                const data = await response.json();
+                if (data.success) {
+                    const credits = data.totalCredits || 0;
+                    document.getElementById('creditsDisplay').textContent = credits;
+                    if (credits === 0) {
+                        document.getElementById('noCreditsWarning').classList.remove('hidden');
+                        document.getElementById('processBtn').disabled = true;
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading subscription:', error);
+            }
+        }
+
+        async function loadHistory() {
+            try {
+                const response = await fetch(`${API_URL}/api/user/history`, {
+                    headers: { 'Authorization': `Bearer ${session.access_token}` }
+                });
+                const data = await response.json();
+                if (data.success && data.history.length > 0) {
+                    renderHistory(data.history.slice(0, 5));
+                } else {
+                    document.getElementById('historyList').innerHTML = '<div class="empty-state">No processing history yet</div>';
+                }
+            } catch (error) {
+                console.error('Error loading history:', error);
+            }
+        }
+
+        function renderHistory(history) {
+            const container = document.getElementById('historyList');
+            container.innerHTML = history.map(item => {
+                const date = new Date(item.created_at).toLocaleString();
+                const statusClass = item.status === 'completed' ? 'completed' : 
+                                   item.status === 'failed' ? 'failed' : 'processing';
+                return `
+                    <div class="history-item">
+                        <div>
+                            <div class="history-url">${item.video_url.substring(0, 50)}...</div>
+                            <div class="history-date">${date}</div>
+                        </div>
+                        <span class="history-status ${statusClass}">${item.status}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function processVideo() {
+            const videoUrl = document.getElementById('videoUrlInput').value.trim();
+            if (!videoUrl) { alert('Please enter a video URL'); return; }
+            if (!videoUrl.startsWith('https://sora.chatgpt.com/')) {
+                alert('Please enter a valid Sora video URL'); return;
+            }
+
+            document.getElementById('uploadSection').classList.add('hidden');
+            document.getElementById('errorSection').classList.add('hidden');
+            document.getElementById('resultSection').classList.add('hidden');
+            document.getElementById('processingSection').classList.remove('hidden');
+
+            try {
+                const response = await fetch(`${API_URL}/api/remove-watermark`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${session.access_token}`
+                    },
+                    body: JSON.stringify({ videoUrl })
+                });
+                const data = await response.json();
+
+                if (response.status === 202 && data.taskId) {
+                    currentTaskId = data.taskId;
+                    startPolling(data.taskId);
+                    if (data.creditsRemaining !== undefined) {
+                        document.getElementById('creditsDisplay').textContent = data.creditsRemaining;
+                    }
+                } else if (response.ok) {
+                    showSuccess(data.videoUrl);
+                } else {
+                    throw new Error(data.error || data.message || 'Processing failed');
+                }
+            } catch (error) {
+                showError(error.message);
+            }
+        }
+
+        function startPolling(taskId) {
+            let progress = 0;
+            pollInterval = setInterval(() => {
+                progress = Math.min(progress + 5, 90);
+                updateProgress(progress);
+            }, 1000);
+            checkTaskStatus(taskId);
+        }
+
+        async function checkTaskStatus(taskId) {
+            try {
+                const response = await fetch(`${API_URL}/api/task/${taskId}`);
+                const data = await response.json();
+                if (data.status === 'completed') {
+                    clearInterval(pollInterval);
+                    updateProgress(100);
+                    setTimeout(() => showSuccess(data.videoUrl), 500);
+                    await loadSubscription();
+                    await loadHistory();
+                } else if (data.status === 'failed') {
+                    clearInterval(pollInterval);
+                    showError(data.error || 'Processing failed');
+                } else {
+                    setTimeout(() => checkTaskStatus(taskId), 2000);
+                }
+            } catch (error) {
+                clearInterval(pollInterval);
+                showError('Failed to check processing status');
+            }
+        }
+
+        function updateProgress(percent) {
+            document.getElementById('progressBar').style.width = percent + '%';
+            document.getElementById('progressText').textContent = percent + '%';
+        }
+
+        function showSuccess(videoUrl) {
+            document.getElementById('processingSection').classList.add('hidden');
+            document.getElementById('resultSection').classList.remove('hidden');
+            const video = document.getElementById('resultVideo');
+            video.src = videoUrl;
+            const downloadBtn = document.getElementById('downloadBtn');
+            downloadBtn.href = videoUrl;
+            downloadBtn.download = 'clean_sora_video.mp4';
+        }
+
+        function showError(message) {
+            document.getElementById('processingSection').classList.add('hidden');
+            document.getElementById('errorSection').classList.remove('hidden');
+            document.getElementById('errorMessage').textContent = message;
+        }
+
+        function processAnother() {
+            document.getElementById('resultSection').classList.add('hidden');
+            document.getElementById('errorSection').classList.add('hidden');
+            document.getElementById('uploadSection').classList.remove('hidden');
+            document.getElementById('videoUrlInput').value = '';
+            updateProgress(0);
+        }
+
+        document.addEventListener('DOMContentLoaded', initDashboard);
+    </script>
+</body>
+</html>

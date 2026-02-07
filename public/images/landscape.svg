@@ -1,0 +1,37 @@
+<!-- Sample landscape image for before/after showcase -->
+<svg width="800" height="450" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="skyGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#16213e;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0f3460;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="mountainGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#2c3e50;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#34495e;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Sky -->
+  <rect width="800" height="450" fill="url(#skyGradient)"/>
+  
+  <!-- Mountains -->
+  <polygon points="0,300 200,150 400,250 600,180 800,280 800,450 0,450" fill="url(#mountainGradient)"/>
+  <polygon points="100,350 300,200 500,300 700,220 800,320 800,450 0,450" fill="#2c3e50" opacity="0.7"/>
+  
+  <!-- Lake reflection -->
+  <rect x="0" y="350" width="800" height="100" fill="#0f3460" opacity="0.6"/>
+  
+  <!-- Stars -->
+  <circle cx="100" cy="50" r="2" fill="white" opacity="0.8"/>
+  <circle cx="250" cy="80" r="1.5" fill="white" opacity="0.6"/>
+  <circle cx="400" cy="40" r="2" fill="white" opacity="0.9"/>
+  <circle cx="600" cy="70" r="1.5" fill="white" opacity="0.7"/>
+  <circle cx="700" cy="30" r="2" fill="white" opacity="0.8"/>
+  <circle cx="150" cy="120" r="1" fill="white" opacity="0.5"/>
+  <circle cx="500" cy="100" r="1.5" fill="white" opacity="0.6"/>
+  
+  <!-- Moon -->
+  <circle cx="650" cy="100" r="40" fill="#f4f4f4" opacity="0.9"/>
+  <circle cx="660" cy="95" r="38" fill="#1a1a2e" opacity="0.3"/>
+</svg>

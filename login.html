@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign In — SoraClean</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -36,129 +34,134 @@
     </header>
 
     <main class="section" style="padding-top:140px; min-height: 80vh; display: flex; align-items: center; justify-content: center;">
-        <div class="login-card" style="margin: 0 auto;">
+        <div class="login-card" style="margin: 0 auto; width: 100%; max-width: 480px;">
             <div class="logo-icon" style="margin: 0 auto 20px;"><i class="fas fa-play"></i></div>
-            <h1 style="text-align: center; color: var(--text-primary); margin-bottom: 8px;">SoraClean</h1>
-        <p class="login-subtitle">Sign in to remove watermarks from your Sora videos</p>
+            <h1 style="text-align: center; color: var(--text-primary); margin-bottom: 8px; font-size: 2rem; font-weight: 800;">SoraClean</h1>
+            <p style="text-align: center; color: var(--text-secondary); margin-bottom: 30px;">Sign in to remove watermarks from your Sora videos</p>
 
-        <!-- Auth Tabs -->
-        <div class="auth-tabs">
-            <button class="auth-tab active" data-tab="signin" onclick="switchTab('signin')">Sign In</button>
-            <button class="auth-tab" data-tab="signup" onclick="switchTab('signup')">Sign Up</button>
-        </div>
+            <!-- Auth Tabs -->
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-tab="signin" onclick="switchTab('signin')">Sign In</button>
+                <button class="auth-tab" data-tab="signup" onclick="switchTab('signup')">Sign Up</button>
+            </div>
 
-        <!-- Sign In Form -->
-        <form id="signinForm" class="auth-form active" onsubmit="handleSignIn(event)">
-            <div class="form-group">
-                <label for="signin-email" class="form-label">Email</label>
-                <input 
-                    type="email" 
-                    id="signin-email" 
-                    class="form-input" 
-                    placeholder="you@example.com"
-                    required
-                />
+            <!-- Sign In Form -->
+            <form id="signinForm" class="auth-form active" onsubmit="handleSignIn(event)">
+                <div class="form-group">
+                    <label for="signin-email" class="form-label">Email</label>
+                    <input type="email" id="signin-email" class="form-input" placeholder="you@example.com" required />
+                </div>
+                <div class="form-group">
+                    <label for="signin-password" class="form-label">Password</label>
+                    <input type="password" id="signin-password" class="form-input" placeholder="Enter your password" required />
+                </div>
+                <button type="submit" class="btn btn-primary w-full" id="signinBtn">
+                    <i class="fas fa-sign-in-alt"></i> Sign In
+                </button>
+                <a href="#" class="forgot-password" onclick="handleForgotPassword(event)">Forgot password?</a>
+            </form>
+
+            <!-- Sign Up Form -->
+            <form id="signupForm" class="auth-form" onsubmit="handleSignUp(event)">
+                <div class="form-group">
+                    <label for="signup-name" class="form-label">Full Name</label>
+                    <input type="text" id="signup-name" class="form-input" placeholder="John Doe" required />
+                </div>
+                <div class="form-group">
+                    <label for="signup-email" class="form-label">Email</label>
+                    <input type="email" id="signup-email" class="form-input" placeholder="you@example.com" required />
+                </div>
+                <div class="form-group">
+                    <label for="signup-password" class="form-label">Password</label>
+                    <input type="password" id="signup-password" class="form-input" placeholder="At least 6 characters" minlength="6" required />
+                </div>
+                <div class="form-group">
+                    <label for="signup-confirm" class="form-label">Confirm Password</label>
+                    <input type="password" id="signup-confirm" class="form-input" placeholder="Re-enter your password" minlength="6" required />
+                </div>
+                <button type="submit" class="btn btn-primary w-full" id="signupBtn">
+                    <i class="fas fa-user-plus"></i> Create Account
+                </button>
+            </form>
+
+            <!-- Error Message -->
+            <div id="authError" class="auth-error hidden" style="margin-top: 20px;"></div>
+
+            <!-- Divider -->
+            <div class="auth-divider">
+                <span>or</span>
             </div>
-            <div class="form-group">
-                <label for="signin-password" class="form-label">Password</label>
-                <input 
-                    type="password" 
-                    id="signin-password" 
-                    class="form-input" 
-                    placeholder="Enter your password"
-                    required
-                />
-            </div>
-            <button type="submit" class="btn btn-primary w-full" id="signinBtn">
-                <i class="fas fa-sign-in-alt"></i> Sign In
+
+            <!-- Google Sign In -->
+            <button onclick="signInWithGoogle()" class="btn-google">
+                <svg width="20" height="20" viewBox="0 0 24 24">
+                    <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                    <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                    <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
+                Continue with Google
             </button>
-            <a href="#" class="forgot-password" onclick="handleForgotPassword(event)">Forgot password?</a>
-        </form>
-    </div>
+
+            <div class="login-terms" style="text-align: center; margin-top: 24px; color: var(--text-muted); font-size: 0.9rem;">
+                <p>By continuing, you agree to our</p>
+                <p><a href="/terms" style="color: var(--accent);">Terms of Service</a> and <a href="/privacy" style="color: var(--accent);">Privacy Policy</a></p>
+            </div>
+
+            <a href="/home" class="login-back" style="display: block; text-align: center; margin-top: 24px; color: var(--text-muted); text-decoration: none;">
+                <i class="fas fa-arrow-left"></i> Back to Home
+            </a>
+        </div>
     </main>
 
-        <!-- Sign Up Form -->
-        <form id="signupForm" class="auth-form" onsubmit="handleSignUp(event)">
-            <div class="form-group">
-                <label for="signup-name" class="form-label">Full Name</label>
-                <input 
-                    type="text" 
-                    id="signup-name" 
-                    class="form-input" 
-                    placeholder="John Doe"
-                    required
-                />
+    <!-- Footer -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col" style="grid-column: span 2;">
+                    <a href="/home" class="logo">
+                        <div class="logo-icon"><i class="fas fa-play"></i></div>
+                        <span class="logo-text">Sora<span class="logo-accent">Clean</span></span>
+                    </a>
+                    <p class="footer-desc">AI-powered watermark removal for Sora videos. Fast, reliable, and affordable.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Product</h4>
+                    <ul>
+                        <li><a href="/home#features">Features</a></li>
+                        <li><a href="/pricing">Pricing</a></li>
+                        <li><a href="/dashboard">Dashboard</a></li>
+                        <li><a href="/api-docs">API Docs</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="/about">About</a></li>
+                        <li><a href="/contact">Contact</a></li>
+                        <li><a href="/blog">Blog</a></li>
+                        <li><a href="/careers">Careers</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="/privacy">Privacy Policy</a></li>
+                        <li><a href="/terms">Terms of Service</a></li>
+                        <li><a href="/cookies">Cookie Policy</a></li>
+                    </ul>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="signup-email" class="form-label">Email</label>
-                <input 
-                    type="email" 
-                    id="signup-email" 
-                    class="form-input" 
-                    placeholder="you@example.com"
-                    required
-                />
+            <div class="footer-bottom">
+                <p>&copy; 2026 SoraClean. All rights reserved.</p>
             </div>
-            <div class="form-group">
-                <label for="signup-password" class="form-label">Password</label>
-                <input 
-                    type="password" 
-                    id="signup-password" 
-                    class="form-input" 
-                    placeholder="At least 6 characters"
-                    minlength="6"
-                    required
-                />
-            </div>
-            <div class="form-group">
-                <label for="signup-confirm" class="form-label">Confirm Password</label>
-                <input 
-                    type="password" 
-                    id="signup-confirm" 
-                    class="form-input" 
-                    placeholder="Re-enter your password"
-                    minlength="6"
-                    required
-                />
-            </div>
-            <button type="submit" class="btn btn-primary w-full" id="signupBtn">
-                <i class="fas fa-user-plus"></i> Create Account
-            </button>
-        </form>
-
-        <!-- Error Message -->
-        <div id="authError" class="auth-error hidden"></div>
-
-        <!-- Divider -->
-        <div class="auth-divider">
-            <span>or</span>
         </div>
+    </footer>
 
-        <!-- Google Sign In -->
-        <button onclick="signInWithGoogle()" class="btn-google">
-            <svg width="20" height="20" viewBox="0 0 24 24">
-                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-            </svg>
-            Continue with Google
-        </button>
-
-        <div class="login-terms">
-            <p>By continuing, you agree to our</p>
-            <p><a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></p>
-        </div>
-
-        <a href="/index.html" class="login-back">
-            <i class="fas fa-arrow-left"></i> Back to Home
-        </a>
-    </div>
-
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="/public/js/config.js"></script>
     <script src="/public/js/auth.js"></script>
     <script>
-        // Theme toggle
         (function() {
             const saved = localStorage.getItem('theme');
             if (saved) document.documentElement.setAttribute('data-theme', saved);
@@ -170,162 +173,102 @@
             }
             updateIcon();
             toggle.addEventListener('click', () => {
-                const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-                const next = isDark ? 'light' : 'dark';
+                const next = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
                 document.documentElement.setAttribute('data-theme', next);
                 localStorage.setItem('theme', next);
                 updateIcon();
             });
         })();
 
-        // Tab switching
         function switchTab(tab) {
             const tabs = document.querySelectorAll('.auth-tab');
             const forms = document.querySelectorAll('.auth-form');
-            
             tabs.forEach(t => t.classList.remove('active'));
             forms.forEach(f => f.classList.remove('active'));
-            
             document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
             document.getElementById(`${tab}Form`).classList.add('active');
-            
-            // Clear error message
             hideError();
         }
 
-        // Show error message
         function showError(message) {
             const errorEl = document.getElementById('authError');
             errorEl.textContent = message;
             errorEl.classList.remove('hidden');
         }
 
-        // Hide error message
         function hideError() {
             const errorEl = document.getElementById('authError');
             errorEl.classList.add('hidden');
         }
 
-        // Handle Sign In
         async function handleSignIn(event) {
             event.preventDefault();
             hideError();
-            
             const email = document.getElementById('signin-email').value;
             const password = document.getElementById('signin-password').value;
             const btn = document.getElementById('signinBtn');
-            
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing in...';
-            
             try {
-                const { data, error } = await supabase.auth.signInWithPassword({
-                    email,
-                    password
-                });
-                
+                const { error } = await supabase.auth.signInWithPassword({ email, password });
                 if (error) throw error;
-                
-                // Check for redirect parameter
-                const urlParams = new URLSearchParams(window.location.search);
-                const redirect = urlParams.get('redirect') || 'dashboard';
-                window.location.href = `/${redirect}.html`;
+                window.location.href = '/dashboard';
             } catch (error) {
                 console.error('Sign in error:', error);
-                showError(error.message || 'Failed to sign in. Please check your credentials.');
+                showError(error.message || 'Failed to sign in.');
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
             }
         }
 
-        // Handle Sign Up
         async function handleSignUp(event) {
             event.preventDefault();
             hideError();
-            
             const name = document.getElementById('signup-name').value;
             const email = document.getElementById('signup-email').value;
             const password = document.getElementById('signup-password').value;
             const confirm = document.getElementById('signup-confirm').value;
             const btn = document.getElementById('signupBtn');
-            
-            // Validate passwords match
-            if (password !== confirm) {
-                showError('Passwords do not match');
-                return;
-            }
-            
-            // Validate password length
-            if (password.length < 6) {
-                showError('Password must be at least 6 characters');
-                return;
-            }
-            
+            if (password !== confirm) { showError('Passwords do not match'); return; }
+            if (password.length < 6) { showError('Password must be at least 6 characters'); return; }
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating account...';
-            
             try {
                 const { data, error } = await supabase.auth.signUp({
-                    email,
-                    password,
-                    options: {
-                        data: {
-                            full_name: name
-                        }
-                    }
+                    email, password, options: { data: { full_name: name } }
                 });
-                
                 if (error) throw error;
-                
-                // Check if email confirmation is required
                 if (data.user && !data.session) {
                     showError('Please check your email to confirm your account.');
                     btn.disabled = false;
                     btn.innerHTML = '<i class="fas fa-user-plus"></i> Create Account';
                 } else {
-                    // Check for redirect parameter
-                    const urlParams = new URLSearchParams(window.location.search);
-                    const redirect = urlParams.get('redirect') || 'dashboard';
-                    window.location.href = `/dashboard`;
+                    window.location.href = '/dashboard';
                 }
             } catch (error) {
                 console.error('Sign up error:', error);
-                showError(error.message || 'Failed to create account. Please try again.');
+                showError(error.message || 'Failed to create account.');
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fas fa-user-plus"></i> Create Account';
             }
         }
 
-        // Handle Forgot Password
         async function handleForgotPassword(event) {
             event.preventDefault();
             const email = document.getElementById('signin-email').value;
-            
-            if (!email) {
-                showError('Please enter your email address first');
-                return;
-            }
-            
+            if (!email) { showError('Enter your email address first'); return; }
             try {
                 const { error } = await supabase.auth.resetPasswordForEmail(email, {
-                    redirectTo: `${window.location.origin}/reset-password.html`
+                    redirectTo: `${window.location.origin}/reset-password`
                 });
-                
                 if (error) throw error;
-                
-                alert('Password reset email sent! Please check your inbox.');
-            } catch (error) {
-                console.error('Password reset error:', error);
-                showError(error.message || 'Failed to send reset email');
-            }
+                alert('Password reset email sent!');
+            } catch (error) { showError(error.message || 'Failed to send reset email'); }
         }
 
-        // Check if already logged in
         document.addEventListener('DOMContentLoaded', async () => {
             const session = await checkAuth();
-            if (session) {
-                window.location.href = '/dashboard';
-            }
+            if (session) window.location.href = '/dashboard';
         });
     </script>
 </body>
